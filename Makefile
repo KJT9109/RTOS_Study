@@ -11,6 +11,8 @@ LINKER_SCRIPT = navilos.ld
 ASM_SRCS = $(wildcard boot/*.S)
 ASM_OBJS = $(patsubst boot/%.S, build/%.o, $(ASM_SRCS))
 
+INC_DIRS = include
+
 navilos = build/navilos.axf
 navilos_bin = build/navilos.bin 
 
@@ -38,5 +40,7 @@ $(navilos): $(ASM_OBJS) $(LINKER_SCRIPT)
 
 build/%.o: boot/%.S
 	mkdir -p $(shell dirname $@)    #mkdir -p build 실행 됨 #
-	$(AS) -march=$(ARCH) -mcpu=$(MCPU) -g -o $@ $<
+	$(CC) -march=$(ARCH) -mcpu=$(MCPU) -I $(INC_DIRS) -c -o $@ $<  
+	#$(AS) 에서 $(CC)로 수정 include "~~.h" 는 c언어 문법이므로#
+
 
