@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "haluart.h": "c",
+        "stdio.h": "c",
+        "stdint.h": "c",
+        "halinterrupt.h": "c"
+    }
+}

@@ -1,7 +1,11 @@
 #include "stdint.h"
-#include "HalUart.h"
-
+#include "stdbool.h"
 #include "stdio.h"
+
+#include "HalUart.h"
+#include "HalInterrupt.h"
+
+
 
 static void Hw_init(void);
 static void printf_test(void);
@@ -14,15 +18,17 @@ int main(void)
     putstr("Hello world!\n");
 
     printf_test();
-    length = getstr();
+    //length = getstr();
 
 
-   return 0;
+   while(true);
 }
 
 static void Hw_init(void)
 {
+    Hal_interrupt_init();
     Hal_uart_init();
+    
 }
 
 static void printf_test(void)
