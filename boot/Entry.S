@@ -8,14 +8,14 @@
 	.global vector_end
 
      vector_start:
-	LDR PC, reset_handler_addr
-	LDR PC, undef_handler_addr
-	LDR PC, svc_handler_addr
-	LDR PC, pftch_abt_handler_addr
-	LDR PC, data_abt_handler_addr
-	B .
-	LDR PC, irq_handler_addr
-	LDR PC, fiq_handler_addr
+	LDR PC, reset_handler_addr       //0x00 Reset
+	LDR PC, undef_handler_addr       //0x04 Undefined Instruction
+	LDR PC, svc_handler_addr         //0x08 SVC exception
+	LDR PC, pftch_abt_handler_addr   //0x0c Prefetch Abort
+	LDR PC, data_abt_handler_addr    //0x10 Data Abort
+	B .                              //0x14 Not used
+	LDR PC, irq_handler_addr         //0x18 IRQ Interrupt
+	LDR PC, fiq_handler_addr         //0x1C FIQ Interrupt
 	
 	reset_handler_addr: 	.word reset_handler
 	undef_handler_addr: 	.word dummy_handler
