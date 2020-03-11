@@ -1,27 +1,15 @@
 #include "stdint.h"
 #include "stdbool.h"
 #include "stdio.h"
+#include "stdlib.h"
 
 #include "HalUart.h"
 #include "HalInterrupt.h"
 #include "HalTimer.h"
 
-#include "stdlib.h"
-
-
 #include "Kernel.h"
 
-static void Hw_init(void);
-static void printf_test(void);
-static void Timer_test(void);
-
-static void Kernel_init(void);
-
-void User_task0(void);
-void User_task1(void);
-void User_task2(void);
-void User_task3(void);
-void User_task4(void);
+#include "main.h"
 
 int main(void)
 {
@@ -56,7 +44,7 @@ static void Kernel_init(void)
         putstr("Task1 creation fail\n");
     }
 
-    taskId = Kernel_task_create(User_task2,0);
+    taskId = Kernel_task_create(User_task2,1);
     if (NOT_ENOUGH_TASK_NUM == taskId)
     {
         putstr("Task2 creation fail\n");
@@ -88,6 +76,22 @@ void User_task0(void)
     while(true)
     {
         debug_printf("User Task #0\n", &local);
+        KernelEventFlag_t handle_event = Kernel_wait_events(KernelEventFlag_UartIn|KernelEventFlag_CmdOut);
+        switch(handle_event)
+        {
+            case KernelEventFlag_UartIn:
+            debug_printf("Uart Event Handle \n");
+            Kernel_send_events(KernelEventFlag_CmdOut);
+            break;
+            /*
+            case KernelEventFlag_CmdOut:
+            debug_printf("Cmdout Event Handle \n");
+            break;
+            */
+
+
+        }
+        
         delay(1000);
         Kernel_yield();
     }
@@ -100,6 +104,14 @@ void User_task1(void)
     while(true)
     {
         debug_printf("User Task #1\n", &local);
+        KernelEventFlag_t handle_event = Kernel_wait_events(KernelEventFlag_CmdOut);
+        switch(handle_event)
+        {
+            case KernelEventFlag_CmdOut:
+            debug_printf("Cmd Event Handle \n");
+            break;
+        }
+        
         delay(1000);
         Kernel_yield();
     }
