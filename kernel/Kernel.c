@@ -19,7 +19,7 @@ void Kernel_start(void)
 
 void Kernel_send_events(uint32_t event_list)
 {
-    for (uint32_t i = 0; i<32; i++)
+    for (uint32_t i = 0; i < 32; i++)
     {
         if((event_list >> i) & 1) // i번째 event flag가 있으면(모든 event를 검사한다)
         {
@@ -29,7 +29,7 @@ void Kernel_send_events(uint32_t event_list)
             
         }
     }
-}/* 이 함수에는 event flag와 상관 없이 event가 있으면 event flag 0번째 비트 1로 setting*/
+}
 
 
 KernelEventFlag_t Kernel_wait_events(uint32_t waiting_list)
@@ -50,3 +50,43 @@ KernelEventFlag_t Kernel_wait_events(uint32_t waiting_list)
 
     return KernelEventFlag_Empty;
 }
+
+
+bool Kernel_send_msg(KernelMsgQ_t Qname, void* data, uint32_t count)
+{
+    uint8_t* d = (uint8_t*)data;
+
+    for (uint32_t i = 0 ; i < count ; i++)
+    {
+        if (false == Kernel_msgQ_enqueue(Qname, *d))
+        {
+            for (uint32_t j = 0 ; j < i ; j++)
+            {
+                uint8_t rollback;
+                Kernel_msgQ_dequeue(Qname, &rollback);
+            }
+            return false;
+        }
+        d++;
+    }
+
+    return true;
+}
+
+uint32_t Kernel_recv_msg(KernelMsgQ_t Qname, void* out_data, uint32_t count)
+{
+    uint8_t* d = (uint8_t*)out_data;
+
+    for (uint32_t i = 0 ; i < count ; i++)
+    {
+        if (false == Kernel_msgQ_dequeue(Qname, d))
+        {
+            return i;
+        }
+        d++;
+    }
+
+    return count;
+}
+
+

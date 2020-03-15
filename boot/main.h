@@ -13,5 +13,6 @@ void User_task2(void);
 void User_task3(void);
 void User_task4(void);
 
+uint8_t Buffer_push_msg(uint8_t* index, uint8_t* length, uint8_t* sendBuf, uint8_t* recvBuf);
 #endif
 
