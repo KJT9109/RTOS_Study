@@ -35,6 +35,10 @@ int main(void)
 static void Kernel_init(void)
 {
     uint32_t taskId;
+    Kernel_event_flag_init();
+    Kernel_msgQ_init();
+    Kernel_sem_init(1);
+  
 
     taskId = Kernel_task_create(User_task0,1);
     if (NOT_ENOUGH_TASK_NUM == taskId)
@@ -119,9 +123,6 @@ void User_task0(void)
                     
                 }
 
-                
-
-            
             break;
         }
         
@@ -165,6 +166,14 @@ void User_task2(void)
     while(true)
     {
         debug_printf("User Task #2\n", &local);
+        KernelEventFlag_t handle_event = Kernel_wait_events(KernelEventFlag_Semaphore);
+        switch(handle_event)
+        {
+            case KernelEventFlag_Semaphore:
+                debug_printf("event semaphore\n");
+                Test_critical_section(5,2);
+            break;
+        }
         delay(1000);
         Kernel_yield();
     }
@@ -179,6 +188,7 @@ void User_task3(void)
     while(true)
     {
         debug_printf("User Task #3\n", &local);
+        Test_critical_section(3,3);
         delay(1000);
         Kernel_yield();
     }
@@ -251,4 +261,19 @@ uint8_t Buffer_push_msg(uint8_t* index, uint8_t* length, uint8_t* sendBuf, uint8
     {
         return sIndex;
     }
+}
+
+
+static uint32_t shared_value;
+static void Test_critical_section(uint32_t p, uint32_t taskId)
+{
+    Kernel_lock_sem();
+
+    debug_printf("section Task #%u Send=%u\n", taskId, p);
+    shared_value = p;
+    Kernel_yield();
+    delay(1000);
+    debug_printf("hello Task #%u Shared Value=%u\n", taskId, shared_value);
+
+    Kernel_unlock_sem();
 }

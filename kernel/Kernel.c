@@ -3,6 +3,7 @@
 
 #include "memio.h"
 #include "Kernel.h"
+#include "synch.h"
 
 void Kernel_yield(void)
 {
@@ -89,4 +90,16 @@ uint32_t Kernel_recv_msg(KernelMsgQ_t Qname, void* out_data, uint32_t count)
     return count;
 }
 
+void Kernel_lock_sem(void)
+{
+    while(false == Kernel_sem_check())
+    {
+        Kernel_yield();
+    }
+}
+
+void Kernel_unlock_sem(void)
+{
+    Kernel_sem_release();
+}
 

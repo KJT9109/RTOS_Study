@@ -54,6 +54,7 @@ static void interrupt_handler(void)
     
     Kernel_send_msg(KernelMsgQ_Task0,&ch,1);
     Kernel_send_events(KernelEventFlag_UartIn);
-
+    if(ch =='s')
+        Kernel_send_events(KernelEventFlag_Semaphore);
 }
    
