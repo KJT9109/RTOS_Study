@@ -114,6 +114,11 @@ __attribute__ ((naked)) void Kernel_task_context_switching(void)
     __asm__ ("B Restore_context");
 }
 
+uint32_t Kernel_task_get_current_task_id(void)
+{
+    return sCurrent_tcb_index;
+}
+
 
 void Kernel_task_start(void)
 {

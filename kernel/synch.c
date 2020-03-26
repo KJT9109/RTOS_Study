@@ -8,6 +8,8 @@
 static int32_t sSemMax;
 static int32_t sSem;
 
+static KernelMutext_t sMutex;
+
 void Kernel_sem_init(int32_t max)
 {
     sSemMax = (max <= 0) ? DEF_SEM_MAX : max; //(max <= 0) 이 참이면 sSemMax에 DEF_SEM_MAX을 할당 아니면 max를 할당
@@ -35,4 +37,34 @@ void Kernel_sem_release(void)
 
     sSem++;
 }
+
+
+void Kernel_mutex_init(void)
+{
+    sMutex.owner = 0;
+    sMutex.lock = false;
+}
+
+bool Kernel_mutex_lock(uint32_t owner)
+{
+    if (sMutex.lock)
+    {
+        return false;
+    }
+
+    sMutex.owner = owner;
+    sMutex.lock = true;
+    return true;
+}
+
+bool Kernel_mutex_unlock(uint32_t owner)
+{
+    if (owner == sMutex.owner)
+    {
+        sMutex.lock = false;
+        return true;
+    }
+    return false;
+}
+
 

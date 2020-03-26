@@ -52,9 +52,18 @@ static void interrupt_handler(void)
     Hal_uart_put_char(ch);
     Hal_uart_put_char('\n');
     
+    if(ch =='s')
+    {
+        Kernel_send_events(KernelEventFlag_Semaphore);
+        return;
+    }
+    if(ch =='m')
+    {
+        Kernel_send_events(KernelEventFlag_MutexLock); 
+        return;
+    }
+
     Kernel_send_msg(KernelMsgQ_Task0,&ch,1);
     Kernel_send_events(KernelEventFlag_UartIn);
-    if(ch =='s')
-        Kernel_send_events(KernelEventFlag_Semaphore);
 }
    

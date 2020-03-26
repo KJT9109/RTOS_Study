@@ -22,9 +22,8 @@ int main(void)
     putstr("Hello world!\n");
     printf_test();
     Kernel_task_init();
+    Kernel_mutex_init();
     Kernel_init();
-    
-    
     //Timer_test();
     //length = getstr();
 
@@ -89,7 +88,7 @@ void User_task0(void)
     while(true)
     {
         debug_printf("User Task #0\n");
-        KernelEventFlag_t handle_event = Kernel_wait_events(KernelEventFlag_UartIn);
+        KernelEventFlag_t handle_event = Kernel_wait_events(KernelEventFlag_UartIn|KernelEventFlag_MutexLock);
         switch(handle_event)
         {
             case KernelEventFlag_UartIn:
@@ -124,6 +123,12 @@ void User_task0(void)
                 }
 
             break;
+
+            case KernelEventFlag_MutexLock:
+                Mutex_critical_section(0,0);
+            
+            break;
+
         }
         
         delay(1000);
@@ -171,7 +176,7 @@ void User_task2(void)
         {
             case KernelEventFlag_Semaphore:
                 debug_printf("event semaphore\n");
-                Test_critical_section(5,2);
+                Test_critical_section(2,2);
             break;
         }
         delay(1000);
@@ -188,7 +193,8 @@ void User_task3(void)
     while(true)
     {
         debug_printf("User Task #3\n", &local);
-        Test_critical_section(3,3);
+        //Test_critical_section(3,3);
+        Mutex_critical_section(3,3);
         delay(1000);
         Kernel_yield();
     }
@@ -203,6 +209,7 @@ void User_task4(void)
     while(true)
     {
         debug_printf("User Task #4\n", &local);
+        Mutex_critical_section(4,4);
         delay(1000);
         Kernel_yield();
     }
@@ -273,7 +280,22 @@ static void Test_critical_section(uint32_t p, uint32_t taskId)
     shared_value = p;
     Kernel_yield();
     delay(1000);
-    debug_printf("hello Task #%u Shared Value=%u\n", taskId, shared_value);
+    debug_printf("section 2nd Task #%u Shared Value=%u\n", taskId, shared_value);
 
     Kernel_unlock_sem();
 }
+
+static void Mutex_critical_section(uint32_t p, uint32_t taskId)
+{
+    Kernel_lock_mutex();
+
+    debug_printf("Mutex 1st Task #%u Send=%u\n", taskId, p);
+    shared_value = p;
+    Kernel_yield();
+    delay(1000);
+    debug_printf("Mutex 2nd Task #%u Shared Value=%u\n", taskId, shared_value);
+
+    Kernel_unlock_mutex();
+  
+}
+

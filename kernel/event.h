@@ -8,7 +8,7 @@ typedef enum KernelEventFlag_t
     KernelEventFlag_CmdIn       = 0x00000002,
     KernelEventFlag_CmdOut      = 0x00000004,
     KernelEventFlag_Semaphore   = 0x00000008,
-    KernelEventFlag_Reserved04  = 0x00000010,
+    KernelEventFlag_MutexLock   = 0x00000010,
     KernelEventFlag_Reserved05  = 0x00000020,
     KernelEventFlag_Reserved06  = 0x00000040,
     KernelEventFlag_Reserved07  = 0x00000080,

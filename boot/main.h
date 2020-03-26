@@ -15,5 +15,6 @@ void User_task4(void);
 
 uint8_t Buffer_push_msg(uint8_t* index, uint8_t* length, uint8_t* sendBuf, uint8_t* recvBuf);
 static void Test_critical_section(uint32_t p, uint32_t taskId);
+static void Mutex_critical_section(uint32_t p, uint32_t taskId);
 #endif
 
